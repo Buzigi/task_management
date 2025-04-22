@@ -24,6 +24,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
       - name: Publish .NET Project
         run: |
           dotnet publish src/TaskMAPI/TaskMAPI.csproj -c Release -o src/TaskMAPI/bin/Release/net9.0/publish
