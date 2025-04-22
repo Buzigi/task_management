@@ -46,15 +46,8 @@ jobs:
           docker build -f src/TaskMAPI/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Update Kubernetes Deployment
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: taskm-api
-          IMAGE_TAG: ${{ env.TAG }}
-        run: |
-          aws eks update-kubeconfig --region eu-west-2 --name taskm-cluster
-          kubectl set image deployment/taskm-api-deployment taskm-api=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/taskm-api-deployment
+      - name: Wait for ECR sync
+        run: sleep 10
 
       - name: Rollout and Auto-Rollback on Failure
         env:
@@ -65,7 +58,7 @@ jobs:
           set -e
           aws eks update-kubeconfig --region eu-west-2 --name taskm-cluster
           kubectl set image deployment/taskm-api-deployment taskm-api=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          if ! kubectl rollout status deployment/taskm-api-deployment; then
+          if ! kubectl rollout status deployment/taskm-api-deployment --timeout=120s; then
             echo "Rollout failed, rolling back..."
             kubectl rollout undo deployment/taskm-api-deployment
             exit 1
