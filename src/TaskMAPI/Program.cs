@@ -1,16 +1,13 @@
 using Serilog;
 using TaskMAPI.Services;
+using TaskMAPI.Services.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
 //Add Serilog
-
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .WriteTo.Console()
-    .CreateLogger();
+builder.Services.SerilogServices(builder.Configuration);
 
 // Replace the default logging with Serilog
 builder.Host.UseSerilog();
@@ -31,7 +28,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-if (app.Environment.IsDevelopment())
+if (builder.Configuration.GetValue<bool>("SwaggerEnabled"))
 {
     app.MapOpenApi();
     app.UseSwagger();

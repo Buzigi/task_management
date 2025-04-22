@@ -1,20 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: taskmapi-deployment
+  name: taskm-api-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: taskmapi
+      app: taskm-api
   template:
     metadata:
       labels:
-        app: taskmapi
+        app: taskm-api
     spec:
+      serviceAccountName: taskm-logging-sa
       containers:
-        - name: taskmapi
-          image: buzigi/taskmapi:latest
-          imagePullPolicy: Always
+        - name: taskm-api
+          image: 541953923651.dkr.ecr.eu-west-2.amazonaws.com/taskm-api:latest
           ports:
             - containerPort: 80
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"

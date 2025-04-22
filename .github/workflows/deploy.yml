@@ -1,0 +1,63 @@
+name: Build and Deploy to AWS EKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up variables
+        id: vars
+        run: echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build, Tag, and Push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: taskm-api
+          IMAGE_TAG: ${{ env.TAG }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update Kubernetes Deployment
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: taskm-api
+          IMAGE_TAG: ${{ env.TAG }}
+        run: |
+          aws eks update-kubeconfig --region eu-west-2 --name taskm-cluster
+          kubectl set image deployment/taskm-api-deployment taskm-api=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          kubectl rollout status deployment/taskm-api-deployment
+
+      - name: Rollout and Auto-Rollback on Failure
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: taskm-api
+          IMAGE_TAG: ${{ env.TAG }}
+        run: |
+          set -e
+          aws eks update-kubeconfig --region eu-west-2 --name taskm-cluster
+          kubectl set image deployment/taskm-api-deployment taskm-api=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          if ! kubectl rollout status deployment/taskm-api-deployment; then
+            echo "Rollout failed, rolling back..."
+            kubectl rollout undo deployment/taskm-api-deployment
+            exit 1
+          fi
