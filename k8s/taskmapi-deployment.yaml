@@ -7,6 +7,10 @@ spec:
   selector:
     matchLabels:
       app: taskm-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
   template:
     metadata:
       labels:
