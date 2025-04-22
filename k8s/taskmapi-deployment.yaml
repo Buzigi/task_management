@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taskmapi
+  template:
+    metadata:
+      labels:
+        app: taskmapi
+    spec:
+      containers:
+        - name: taskmapi
+          image: buzigi/taskmapi:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80

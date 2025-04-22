@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: src/TaskMAPI/Dockerfile
+    image: buzigi/taskm-api:latest
     container_name: taskm-api-docker
     restart: unless-stopped
     ports:

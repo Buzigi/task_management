@@ -30,7 +30,7 @@ namespace TaskMAPI.Controllers
             if (!ModelState.IsValid)
             {
                 message = "Invalid login attempt.";
-                _logger.LogWarning($"{message}. User: {model.Email}");
+                _logger.LogWarning($"{message} User: {model.Email}");
                 ModelState.AddModelError(string.Empty, message);
                 return BadRequest(ModelState);
             }
@@ -45,7 +45,7 @@ namespace TaskMAPI.Controllers
             }
 
             message = "Invalid login attempt.";
-            _logger.LogWarning($"{message}. User: {model.Email}");
+            _logger.LogWarning($"{message} User: {model.Email}");
             ModelState.AddModelError(string.Empty, message);
             return BadRequest(ModelState);
         }
