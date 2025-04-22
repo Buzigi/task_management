@@ -4,8 +4,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 # Set working directory inside container
 WORKDIR /app
 
+EXPOSE 80
+
 # Set environment variables for HTTPS
-ENV ASPNETCORE_URLS="https://+:443;http://+:80"
+ENV ASPNETCORE_URLS="http://+:80"
 ENV ASPNETCORE_ENVIRONMENT="Development"
 
 # Copy published app from local folder to container
