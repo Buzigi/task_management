@@ -27,3 +27,5 @@ spec:
               value: "Production"
             - name: ASPNETCORE_URLS
               value: "http://+:80"
+            - name: DISABLE_HTTPS_REDIRECTION
+              value: "true"

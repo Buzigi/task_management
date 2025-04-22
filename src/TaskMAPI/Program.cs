@@ -35,7 +35,11 @@ if (builder.Configuration.GetValue<bool>("SwaggerEnabled"))
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!Environment.GetEnvironmentVariable("DISABLE_HTTPS_REDIRECTION")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true)
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.MapControllers();
 
