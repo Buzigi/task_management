@@ -46,19 +46,19 @@ public class CognitoAuthService : IAuthenticationService
 
             return true;
         }
-        catch (NotAuthorizedException ex)
+        catch (NotAuthorizedException)
         {
-            _logger.LogWarning(ex, "Login failed: Incorrect username or password.");
+            _logger.LogWarning("Login failed: Incorrect username or password.");
             return false;
         }
-        catch (UserNotConfirmedException ex)
+        catch (UserNotConfirmedException)
         {
-            _logger.LogWarning(ex, "Login failed: User not confirmed. Please verify your email.");
+            _logger.LogWarning("Login failed: User not confirmed. Please verify your email.");
             return false;
         }
-        catch (UserNotFoundException ex)
+        catch (UserNotFoundException)
         {
-            _logger.LogWarning(ex, "Login failed: User does not exist.");
+            _logger.LogWarning("Login failed: User does not exist.");
             return false;
         }
         catch (AmazonCognitoIdentityProviderException ex)
