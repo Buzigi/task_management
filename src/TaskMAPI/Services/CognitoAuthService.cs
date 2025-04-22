@@ -11,7 +11,6 @@ public class CognitoAuthService : IAuthenticationService
     private readonly IAmazonCognitoIdentityProvider _cognitoClient;
     private readonly ILogger<CognitoAuthService> _logger;
     private readonly string _clientId;
-    private readonly string _userPoolId;
 
     public CognitoAuthService(
         IAmazonCognitoIdentityProvider cognitoClient,
@@ -21,7 +20,6 @@ public class CognitoAuthService : IAuthenticationService
         _cognitoClient = cognitoClient;
         _logger = logger;
         _clientId = configuration["AWS:UserPoolClientId"];
-        _userPoolId = configuration["AWS:UserPoolId"];
     }
     public async Task<bool> LoginAsync(string email, string password)
     {
