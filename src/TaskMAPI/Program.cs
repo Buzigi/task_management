@@ -1,5 +1,5 @@
+using Serilog;
 using TaskMAPI.Services;
-using TaskMAPI.Services.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,9 +7,14 @@ builder.Services.AddOpenApi();
 
 //Add Serilog
 
-builder.Services.SerilogServices(builder.Configuration);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
+    .CreateLogger();
 
-builder.Logging.AddConsole();
+// Replace the default logging with Serilog
+builder.Host.UseSerilog();
+
 
 //Add Cognito Authentication Services
 //TODO: Move IAM configurations to Env variable
