@@ -24,6 +24,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Publish .NET Project
+        run: |
+          dotnet publish src/TaskMAPI/TaskMAPI.csproj -c Release -o src/TaskMAPI/bin/Release/net9.0/publish
+
       - name: Set up variables
         id: vars
         run: echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
